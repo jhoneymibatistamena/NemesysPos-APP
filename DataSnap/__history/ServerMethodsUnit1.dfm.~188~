@@ -1,0 +1,1067 @@
+object ServerMethods1: TServerMethods1
+  Height = 593
+  Width = 1070
+  object DSconnection: TFDConnection
+    Params.Strings = (
+      'Database=C:\NemeSys\Database\NEMESYSDB.IB'
+      'User_Name=SYSDBA'
+      'Password=masterkey'
+      'DriverID=IB')
+    Connected = True
+    LoginPrompt = False
+    Left = 72
+    Top = 24
+  end
+  object DSPVentas: TDataSetProvider
+    DataSet = Rventas
+    Left = 344
+    Top = 32
+  end
+  object Rventas: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'SELECT '
+      '  F.TIPO_FACT,'
+      
+        '  sum(coalesce(DF.SUBTOTAL, 0)) - MAX(F.TOTALDESCUENTO) AS SUBTO' +
+        'TAL,'
+      
+        '  sum(coalesce(DF.COSTO_ESTANDAR * DF.CANT, 0)) AS COSTO_ESTANDA' +
+        'R'
+      'FROM'
+      '  FACTURA F,'
+      '  DETALLE_FACTURA DF,'
+      '  INVENTARIO INV'
+      'WHERE'
+      '  F.FACTNO = DF.ID_FACTURA AND '
+      '  DF.ITEM_ID = INV.CODIGO_ITEM AND '
+      '  F.ELIMINADA = '#39'0'#39' AND'
+      '  cast(f.fecha as date) ||'#39' '#39'||cast(case when'
+      #9'('
+      
+        #9'case when SUBSTRING(f.hora from 1 for 2) || SUBSTRING(f.hora fr' +
+        'om 10 for 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm' +
+        #39','#39'08pm'#39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      
+        #9'then cast(SUBSTRING(hora from 1 for 2) as integer) + 12 else SU' +
+        'BSTRING(hora from 1 for 2) end'
+      #9') = 24'
+      #9'then '#39'00'#39
+      #9'ELSE('#9
+      #9'case '
+      
+        #9'when SUBSTRING(f.hora from 1 for 2)||SUBSTRING(f.hora from 10 f' +
+        'or 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm'#39','#39'08pm' +
+        #39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      #9'then cast(SUBSTRING(f.hora from 1 for 2) as integer) + 12'
+      #9'else SUBSTRING(hora from 1 for 2) end) end|| '#39':'#39'||'
+      #9'SUBSTRING(hora from 4 for 2)|| '#39':'#39'||'
+      
+        #9'SUBSTRING(hora from 7 for 2) as time) BETWEEN :xfecha1 and :xfe' +
+        'cha2'
+      #9'GROUP BY'
+      '  '#9'F.TIPO_FACT')
+    Left = 272
+    Top = 32
+    ParamData = <
+      item
+        Name = 'XFECHA1'
+        DataType = ftWideString
+        ParamType = ptInput
+        Value = ''
+      end
+      item
+        Name = 'XFECHA2'
+        DataType = ftWideString
+        ParamType = ptInput
+        Value = ''
+      end>
+  end
+  object RcifraVentas: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'select first :xnum '
+      'cj.CAJA,'
+      'cj.USUARIO_CAJERO as USER_CAJERO,'
+      'us.NOMBRE || '#39' '#39' || us.APELLIDO as USUARIO_CAJERO,'
+      'us.NOMBRE || '#39' '#39' || us.APELLIDO as CAJERO_DISPLAY,'
+      'cj.FECHA_HORA_INICIO,'
+      'cj.FECHA_HORA_FIN,'
+      'cj.FONDO_CAJA,'
+      'cj.TOTAL_EFECTIVO,'
+      'cj.TOTAL_TARJETA,'
+      'CJ.TOTAL_CHEQUE'
+      'from CIERRE_CAJA cj left join usuarios us  '
+      'on us.USUARIO = cj.USUARIO_CAJERO'
+      'order by CJ.FECHA_HORA_FIN DESC'
+      '')
+    Left = 272
+    Top = 96
+    ParamData = <
+      item
+        Name = 'XNUM'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object DSPCifraVent: TDataSetProvider
+    DataSet = RcifraVentas
+    Left = 344
+    Top = 96
+  end
+  object RIngresos: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'SELECT '
+      'ing.FORMA_PAGO,'
+      
+        '( sum(coalesce(ing.PAGADO,0)) - sum(coalesce(ing.CAMBIO,0)) ) AS' +
+        ' TOTAL  '
+      'from ingresos ing '
+      'where'
+      'estatus_factura = 0 and '
+      'caja = :xcaja and '
+      'cajero = :idcajero and'
+      'cast(ing.fecha as date) ||'#39' '#39'||cast(case when'
+      #9'('
+      
+        #9'case when SUBSTRING(ing.hora from 1 for 2) || SUBSTRING(ing.hor' +
+        'a from 10 for 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39 +
+        '07pm'#39','#39'08pm'#39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      
+        #9'then cast(SUBSTRING(hora from 1 for 2) as integer) + 12 else SU' +
+        'BSTRING(hora from 1 for 2) end'
+      #9') = 24'
+      #9'then '#39'00'#39
+      #9'ELSE('#9
+      #9'case '
+      
+        #9'when SUBSTRING(ing.hora from 1 for 2)||SUBSTRING(ing.hora from ' +
+        '10 for 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm'#39','#39 +
+        '08pm'#39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      #9'then cast(SUBSTRING(ing.hora from 1 for 2) as integer) + 12'
+      #9'else SUBSTRING(hora from 1 for 2) end) end|| '#39':'#39'||'
+      #9'SUBSTRING(hora from 4 for 2)|| '#39':'#39'||'
+      
+        #9'SUBSTRING(hora from 7 for 2) as time) BETWEEN :xfecha1 and :xfe' +
+        'cha2'
+      'group by ing.FORMA_PAGO ')
+    Left = 264
+    Top = 200
+    ParamData = <
+      item
+        Name = 'XCAJA'
+        DataType = ftSmallint
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'IDCAJERO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 20
+        Value = '002'
+      end
+      item
+        Name = 'XFECHA1'
+        DataType = ftWideString
+        ParamType = ptInput
+        Value = '2022-04-01 00:00:00'
+      end
+      item
+        Name = 'XFECHA2'
+        DataType = ftWideString
+        ParamType = ptInput
+        Value = '2022-05-20 00:00:00'
+      end>
+  end
+  object FVentasIMP: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'SELECT '
+      '  F.TIPO_FACT,'
+      '  sum(coalesce(F.TOTAL_FACT, 0))  AS TOTAL'
+      'FROM'
+      '  FACTURA F'
+      'WHERE'
+      'F.ELIMINADA = '#39'0'#39' AND'
+      'F.CAJA = :XCAJA AND'
+      'F.CAJERO = :IDCAJERO AND'
+      'cast(f.fecha as date) ||'#39' '#39'||cast(case when'
+      #9'('
+      
+        #9'case when SUBSTRING(f.hora from 1 for 2) || SUBSTRING(f.hora fr' +
+        'om 10 for 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm' +
+        #39','#39'08pm'#39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      
+        #9'then cast(SUBSTRING(hora from 1 for 2) as integer) + 12 else SU' +
+        'BSTRING(hora from 1 for 2) end'
+      #9') = 24'
+      #9'then '#39'00'#39
+      #9'ELSE('#9
+      #9'case '
+      
+        #9'when SUBSTRING(f.hora from 1 for 2)||SUBSTRING(f.hora from 10 f' +
+        'or 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm'#39','#39'08pm' +
+        #39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      #9'then cast(SUBSTRING(f.hora from 1 for 2) as integer) + 12'
+      #9'else SUBSTRING(hora from 1 for 2) end) end|| '#39':'#39'||'
+      #9'SUBSTRING(hora from 4 for 2)|| '#39':'#39'||'
+      
+        #9'SUBSTRING(hora from 7 for 2) as time) BETWEEN :xfecha1 and :xfe' +
+        'cha2'
+      'GROUP BY F.TIPO_FACT')
+    Left = 264
+    Top = 256
+    ParamData = <
+      item
+        Name = 'XCAJA'
+        DataType = ftSmallint
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'IDCAJERO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 80
+      end
+      item
+        Name = 'XFECHA1'
+        DataType = ftWideString
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'XFECHA2'
+        DataType = ftWideString
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object FArticulos: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'select '
+      'df.DESC1 as NOMBRE,'
+      
+        'iif ( sum(coalesce(df.CANT,0)) - Trunc(sum(coalesce(df.CANT,0)))' +
+        ' > 0 ,'
+      'ROUND(sum(coalesce(df.CANT,0)),2) ||'#39' '#39'|| df.UND_MEDIDA , '
+      'ROUND(sum(coalesce(df.CANT,0))) ||'#39' '#39'|| df.UND_MEDIDA'
+      ') as CANTIDAD,'
+      'CAST(sum(coalesce(df.TOTAL,0)) as decimal(10,2)) AS TOTAL '
+      'from '
+      'detalle_factura df,'
+      'factura F '
+      'where'
+      'F.FACTNO = df.ID_FACTURA AND'
+      'F.ELIMINADA = '#39'0'#39' AND'
+      'F.CAJA = :XCAJA AND'
+      'F.CAJERO = :IDCAJERO AND'
+      'cast(f.fecha as date) ||'#39' '#39'|| cast(case when'
+      #9'('
+      
+        #9'case when SUBSTRING(f.hora from 1 for 2) || SUBSTRING(f.hora fr' +
+        'om 10 for 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm' +
+        #39','#39'08pm'#39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      
+        #9'then cast(SUBSTRING(hora from 1 for 2) as integer) + 12 else SU' +
+        'BSTRING(hora from 1 for 2) end'
+      #9') = 24'
+      #9'then '#39'00'#39
+      #9'ELSE('#9
+      #9'case '
+      
+        #9'when SUBSTRING(f.hora from 1 for 2)||SUBSTRING(f.hora from 10 f' +
+        'or 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm'#39','#39'08pm' +
+        #39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      #9'then cast(SUBSTRING(f.hora from 1 for 2) as integer) + 12'
+      #9'else SUBSTRING(hora from 1 for 2) end) end|| '#39':'#39'||'
+      #9'SUBSTRING(hora from 4 for 2)|| '#39':'#39'||'
+      
+        #9'SUBSTRING(hora from 7 for 2) as time) BETWEEN :xfecha1 and :xfe' +
+        'cha2'
+      'group by df.DESC1, df.UND_MEDIDA'
+      'having sum(coalesce(df.CANT,0))  <>  0;')
+    Left = 264
+    Top = 312
+    ParamData = <
+      item
+        Name = 'XCAJA'
+        DataType = ftSmallint
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'IDCAJERO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 80
+      end
+      item
+        Name = 'XFECHA1'
+        DataType = ftWideString
+        ParamType = ptInput
+        Value = '2019-11-01 00:00:00'
+      end
+      item
+        Name = 'XFECHA2'
+        DataType = ftWideString
+        ParamType = ptInput
+        Value = '2019-11-01 23:00:00'
+      end>
+  end
+  object DSPIngresos: TDataSetProvider
+    DataSet = RIngresos
+    Left = 360
+    Top = 200
+  end
+  object DSPVentasIMP: TDataSetProvider
+    DataSet = FVentasIMP
+    Left = 360
+    Top = 256
+  end
+  object DSPArticulo: TDataSetProvider
+    DataSet = FArticulos
+    Left = 360
+    Top = 312
+  end
+  object Fdesembolsos: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'SELECT '
+      'coalesce(SUM(DES.MONTO),0) AS Total'
+      'FROM '
+      'DESEMBOLSOS DES'
+      'WHERE'
+      'DES.ELIMINADA = 0 AND'
+      'DES.CAJA = :XCAJA AND'
+      'DES.USUARIO_ID = :IDCAJERO AND'
+      'cast(DES.fecha as date) ||'#39' '#39'||cast(case when'
+      #9'('
+      
+        #9'case when SUBSTRING(DES.hora from 1 for 2) || SUBSTRING(DES.hor' +
+        'a from 10 for 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39 +
+        '07pm'#39','#39'08pm'#39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      
+        #9'then cast(SUBSTRING(hora from 1 for 2) as integer) + 12 else SU' +
+        'BSTRING(hora from 1 for 2) end'
+      #9') = 24'
+      #9'then '#39'00'#39
+      #9'ELSE('#9
+      #9'case '
+      
+        #9'when SUBSTRING(DES.hora from 1 for 2)||SUBSTRING(DES.hora from ' +
+        '10 for 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm'#39','#39 +
+        '08pm'#39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      #9'then cast(SUBSTRING(DES.hora from 1 for 2) as integer) + 12'
+      #9'else SUBSTRING(hora from 1 for 2) end) end|| '#39':'#39'||'
+      #9'SUBSTRING(hora from 4 for 2)|| '#39':'#39'||'
+      
+        #9'SUBSTRING(hora from 7 for 2) as time) BETWEEN :xfecha1 and :xfe' +
+        'cha2 ')
+    Left = 264
+    Top = 368
+    ParamData = <
+      item
+        Name = 'XCAJA'
+        DataType = ftSmallint
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'IDCAJERO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 20
+      end
+      item
+        Name = 'XFECHA1'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 24
+        Value = Null
+      end
+      item
+        Name = 'XFECHA2'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 24
+      end>
+  end
+  object FCantidad: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'SELECT '
+      'COUNT(f.FACTNO) AS cantidad'
+      'FROM '
+      'factura f '
+      'WHERE'
+      'F.ELIMINADA = 0 AND'
+      'F.CAJA = :XCAJA AND'
+      'F.CAJERO = :IDCAJERO AND'
+      'cast(f.fecha as date) ||'#39' '#39'||cast(case when'
+      #9'('
+      
+        #9'case when SUBSTRING(f.hora from 1 for 2) || SUBSTRING(f.hora fr' +
+        'om 10 for 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm' +
+        #39','#39'08pm'#39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      
+        #9'then cast(SUBSTRING(hora from 1 for 2) as integer) + 12 else SU' +
+        'BSTRING(hora from 1 for 2) end'
+      #9') = 24'
+      #9'then '#39'00'#39
+      #9'ELSE('#9
+      #9'case '
+      
+        #9'when SUBSTRING(f.hora from 1 for 2)||SUBSTRING(f.hora from 10 f' +
+        'or 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm'#39','#39'08pm' +
+        #39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      #9'then cast(SUBSTRING(f.hora from 1 for 2) as integer) + 12'
+      #9'else SUBSTRING(hora from 1 for 2) end) end|| '#39':'#39'||'
+      #9'SUBSTRING(hora from 4 for 2)|| '#39':'#39'||'
+      
+        #9'SUBSTRING(hora from 7 for 2) as time) BETWEEN :xfecha1 and :xfe' +
+        'cha2')
+    Left = 264
+    Top = 432
+    ParamData = <
+      item
+        Name = 'XCAJA'
+        DataType = ftSmallint
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'IDCAJERO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 80
+      end
+      item
+        Name = 'XFECHA1'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '2020-02-01 07:00:00'
+      end
+      item
+        Name = 'XFECHA2'
+        DataType = ftString
+        ParamType = ptInput
+        Value = '2020-02-01 19:00:00'
+      end>
+  end
+  object DSPdesembolso: TDataSetProvider
+    DataSet = Fdesembolsos
+    Left = 360
+    Top = 368
+  end
+  object DSPcantidad: TDataSetProvider
+    DataSet = FCantidad
+    Left = 360
+    Top = 432
+  end
+  object Fdeparta: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'select ID,NOMBRE_DEPARTAMENTO from departamento'
+      'ORDER BY NOMBRE_DEPARTAMENTO')
+    Left = 32
+    Top = 336
+  end
+  object Fproductos: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'select'
+      'INV.CODIGO_ITEM,'
+      'INV.DEPARTAMENTO_ID,'
+      'INV.DESC1,'
+      'INV.precio_imp,'
+      'INV.talla,'
+      'INV.atrib,'
+      'iif( EXIS.CANTIDAD - TRUNC(EXIS.CANTIDAD) > 0,'
+      'ROUND(coalesce(EXIS.CANTIDAD,0),2) ||'#39' '#39'|| INV.UND_MEDIDA,'
+      'ROUND(coalesce(EXIS.CANTIDAD,0)) ||'#39' '#39'|| INV.UND_MEDIDA'
+      ')  AS CANTIDAD'
+      'from inventario inv left join existencias exis on '
+      'inv.CODIGO_ITEM = exis.ITEM_ID'
+      'where'
+      'INV.departamento_id = :pid and '
+      'EXIS.localidad = :plocalidad')
+    Left = 32
+    Top = 400
+    ParamData = <
+      item
+        Name = 'PID'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 4
+        Value = '633'
+      end
+      item
+        Name = 'PLOCALIDAD'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 20
+        Value = 'ALM1'
+      end>
+  end
+  object DSPdeparta: TDataSetProvider
+    DataSet = Fdeparta
+    Left = 104
+    Top = 336
+  end
+  object DSPproducto: TDataSetProvider
+    DataSet = Fproductos
+    Left = 104
+    Top = 400
+  end
+  object Finfocliente: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'select '
+      'cli.ID,'
+      'cli.nombre || '#39' '#39' || cli.APELLIDO as NOMBRE,'
+      'coalesce(cli.CEDULA, '#39'N/A'#39') AS RNC,'
+      'coalesce(cli.DIRECCION1,'#39'N/A'#39') AS DIRECCION,'
+      'coalesce(cli.EMAIL,'#39'N/A'#39') AS EMAIL,'
+      'coalesce(cli.TELEFONO1,'#39'N/A'#39') as TELEFONO,'
+      'coalesce(cli.TELEFONO3,'#39'N/A'#39') as CELULAR,'
+      'coalesce(cli.MONEDA,'#39'N/A'#39') as MONEDA,'
+      'coalesce(cli.LAST_SOLD,'#39'N/A'#39') as ULTIMA_VENTA'
+      'from clientes cli where cli.ID = :pid')
+    Left = 32
+    Top = 120
+    ParamData = <
+      item
+        Name = 'PID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object Fcuentas: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'select '
+      'f.IDCLIENTE as ID,'
+      'c.APELLIDO ||'#39', '#39'|| c.NOMBRE as Cliente,'
+      'sum(f.BALANCE) as Deuda'
+      'from'
+      'clientes c,'
+      'factura f'
+      'where'
+      '    c.id = f.IDCLIENTE'
+      'and ROUND(f.BALANCE, 2) > 0 '
+      'and f.TIPO_FACT = '#39'Cr'#233'dito'#39
+      'and f.ELIMINADA = 0'
+      'group by'
+      'f.IDCLIENTE,'
+      'c.APELLIDO ||'#39', '#39'|| c.NOMBRE'
+      'order by '
+      'sum(f.BALANCE) desc')
+    Left = 32
+    Top = 176
+  end
+  object FfactAbiertas: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'select'
+      #39'Factura No: '#39' || f.FACTNO as factno,'
+      'f.NCFTRAKING,'
+      'f.BALANCE  '
+      'from factura f '
+      'where '
+      'f.ELIMINADA = 0 and'
+      'f.IDCLIENTE = :pid and '
+      'round(f.BALANCE,2) > 0.00')
+    Left = 32
+    Top = 232
+    ParamData = <
+      item
+        Name = 'PID'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
+  object DSPinfocliente: TDataSetProvider
+    DataSet = Finfocliente
+    Left = 112
+    Top = 120
+  end
+  object DSPcuentas: TDataSetProvider
+    DataSet = Fcuentas
+    Left = 112
+    Top = 176
+  end
+  object DSPfactabiertas: TDataSetProvider
+    DataSet = FfactAbiertas
+    Left = 112
+    Top = 232
+  end
+  object FDetalleDes: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'SELECT'
+      'DES.USUARIO_ID || '#39' -- '#39' || ra.COMENTARIO AS Titulo,'
+      'coalesce(DES.MONTO,0) MONTO,'
+      'DES.COMENTARIOS'
+      'FROM '
+      'DESEMBOLSOS DES, razones RA'
+      'WHERE'
+      'DES.RAZON_ID = RA.CODIGO AND'
+      'DES.ELIMINADA = 0 AND'
+      'DES.CAJA = :XCAJA AND'
+      'DES.USUARIO_ID = :IDCAJERO AND'
+      'cast(DES.fecha as date) ||'#39' '#39'||cast(case when'
+      #9'('
+      
+        #9'case when SUBSTRING(DES.hora from 1 for 2) || SUBSTRING(DES.hor' +
+        'a from 10 for 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39 +
+        '07pm'#39','#39'08pm'#39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      
+        #9'then cast(SUBSTRING(hora from 1 for 2) as integer) + 12 else SU' +
+        'BSTRING(hora from 1 for 2) end'
+      #9') = 24'
+      #9'then '#39'00'#39
+      #9'ELSE('#9
+      #9'case '
+      
+        #9'when SUBSTRING(DES.hora from 1 for 2)||SUBSTRING(DES.hora from ' +
+        '10 for 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm'#39','#39 +
+        '08pm'#39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      #9'then cast(SUBSTRING(DES.hora from 1 for 2) as integer) + 12'
+      #9'else SUBSTRING(hora from 1 for 2) end) end|| '#39':'#39'||'
+      #9'SUBSTRING(hora from 4 for 2)|| '#39':'#39'||'
+      
+        #9'SUBSTRING(hora from 7 for 2) as time) BETWEEN :xfecha1 and :xfe' +
+        'cha2 ')
+    Left = 264
+    Top = 496
+    ParamData = <
+      item
+        Name = 'XCAJA'
+        DataType = ftSmallint
+        ParamType = ptInput
+        Value = Null
+      end
+      item
+        Name = 'IDCAJERO'
+        DataType = ftString
+        ParamType = ptInput
+        Size = 20
+      end
+      item
+        Name = 'XFECHA1'
+        DataType = ftString
+        ParamType = ptInput
+        Value = ''
+      end
+      item
+        Name = 'XFECHA2'
+        DataType = ftString
+        ParamType = ptInput
+        Value = ''
+      end>
+  end
+  object DSPdetalleDes: TDataSetProvider
+    DataSet = FDetalleDes
+    Left = 360
+    Top = 496
+  end
+  object FLocalidad: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'select localidadnombre from localidad')
+    Left = 32
+    Top = 472
+  end
+  object DSLocalidad: TDataSetProvider
+    DataSet = FLocalidad
+    Left = 104
+    Top = 472
+  end
+  object Fcomprobantes: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'select * from TRAKINGNCF')
+    Left = 464
+    Top = 438
+  end
+  object FcompDefecto: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'select * from NCF_X_DEFECTO')
+    Left = 464
+    Top = 494
+  end
+  object DSPComprobantes: TDataSetProvider
+    DataSet = Fcomprobantes
+    Left = 552
+    Top = 438
+  end
+  object DSPcompDefecto: TDataSetProvider
+    DataSet = FcompDefecto
+    Left = 552
+    Top = 494
+  end
+  object Finventario_ins: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'SELECT '
+      '    INV.CODIGO_ITEM,'
+      '    INV.DEPARTAMENTO_ID,'
+      '    INV.DESC1,'
+      '    INV.DESC2,'
+      '    INV.ATRIB,'
+      '    INV.TALLA,'
+      '    INV.UPC,'
+      '    INV.ALU,'
+      '    INV.IMPUESTO_ID,'
+      '    INV.TIPO,'
+      '    INV.PRECIO,'
+      '    INV.COSTO,'
+      '    INV.LOCALIDAD,'
+      '    INV.ESTATUS_DEL,'
+      '    INV.IMPUESTO_PORC,'
+      '    INV.UND_MEDIDA,'
+      '    INV.PRECIO_IMP,'
+      '    INV.ACOMPANAMIENTO,'
+      '    INV.IMPRIMIR_EN_COMANDA,'
+      '    INV.DETALLE_ITEM,'
+      '    DEP.NOMBRE_DEPARTAMENTO,'
+      '    IMG.IMAGEN'
+      'FROM '
+      '    INVENTARIO INV'
+      '    INNER JOIN DEPARTAMENTO DEP ON INV.DEPARTAMENTO_ID = DEP.ID'
+      '    LEFT JOIN IMAGENES IMG ON IMG.ID_INV = INV.CODIGO_ITEM'
+      'WHERE '
+      '    INV.ESTATUS_DEL = 0;')
+    Left = 872
+    Top = 40
+  end
+  object DSinventario_ins: TDataSetProvider
+    DataSet = Finventario_ins
+    Left = 960
+    Top = 40
+  end
+  object FUsuarios: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'SELECT '
+      'usuario,'
+      'contrasena, '
+      'nombre, '
+      'apellido, '
+      'tipo,'
+      'activo'
+      'FROM USUARIOS')
+    Left = 872
+    Top = 112
+  end
+  object FDepartamento: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'SELECT'
+      'ID, '
+      'NO_DEPART,'
+      'NOMBRE_DEPARTAMENTO,'
+      'ACTIVO,'
+      'ACOMPANAMIENTO,'
+      'COMANDAS'
+      'FROM DEPARTAMENTO ')
+    Left = 872
+    Top = 184
+  end
+  object FExistencia: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'select '
+      'ID,'
+      'ITEM_ID,'
+      'LOCALIDAD,'
+      'CANTIDAD'
+      'from existencias '
+      'where localidad = '#39'ALM1'#39)
+    Left = 872
+    Top = 248
+  end
+  object DSusuarios: TDataSetProvider
+    DataSet = FUsuarios
+    Left = 960
+    Top = 112
+  end
+  object DSdepartamento: TDataSetProvider
+    DataSet = FDepartamento
+    Left = 960
+    Top = 184
+  end
+  object DSexistencia: TDataSetProvider
+    DataSet = FExistencia
+    Left = 960
+    Top = 248
+  end
+  object Fesperasfact: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'select'
+      'factno, '
+      'nombre_cliente,'
+      'coalesce(mesa,'#39#39') as mesa,'
+      'coalesce(subtotal,0) as subtotal,'
+      'coalesce(totaldescuento,0) as totaldescuento,'
+      'coalesce((subtotal - totaldescuento),0 )as TOTAL_SIN_IMP'
+      'from factura f where eliminada = 2 AND'
+      'cast(f.fecha as date) ||'#39' '#39'||cast(case when'
+      #9'('
+      
+        #9'case when SUBSTRING(f.hora from 1 for 2) || SUBSTRING(f.hora fr' +
+        'om 10 for 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm' +
+        #39','#39'08pm'#39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      
+        #9'then cast(SUBSTRING(hora from 1 for 2) as integer) + 12 else SU' +
+        'BSTRING(hora from 1 for 2) end'
+      #9') = 24'
+      #9'then '#39'00'#39
+      #9'ELSE('#9
+      #9'case '
+      
+        #9'when SUBSTRING(f.hora from 1 for 2)||SUBSTRING(f.hora from 10 f' +
+        'or 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm'#39','#39'08pm' +
+        #39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      #9'then cast(SUBSTRING(f.hora from 1 for 2) as integer) + 12'
+      #9'else SUBSTRING(hora from 1 for 2) end) end|| '#39':'#39'||'
+      #9'SUBSTRING(hora from 4 for 2)|| '#39':'#39'||'
+      
+        #9'SUBSTRING(hora from 7 for 2) as time) BETWEEN :xfecha1 and :xfe' +
+        'cha2')
+    Left = 464
+    Top = 142
+    ParamData = <
+      item
+        Name = 'XFECHA1'
+        DataType = ftWideString
+        ParamType = ptInput
+        Value = '2022-01-01 00:00:00'
+      end
+      item
+        Name = 'XFECHA2'
+        DataType = ftWideString
+        ParamType = ptInput
+        Value = '2022-06-01 00:00:00'
+      end>
+  end
+  object Feliminadas: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'select'
+      'factno, '
+      'nombre_cliente,'
+      'Razon1,'
+      'Eliminada_por,'
+      'coalesce(mesa,'#39#39') as mesa,'
+      'coalesce(subtotal,0) as subtotal,'
+      'coalesce(totaldescuento,0) as totaldescuento,'
+      'coalesce((subtotal - totaldescuento), 0) as TOTAL_SIN_IMP'
+      'from factura f where eliminada = 1 AND'
+      'cast(f.fecha as date) ||'#39' '#39'||cast(case when'
+      #9'('
+      
+        #9'case when SUBSTRING(f.hora from 1 for 2) || SUBSTRING(f.hora fr' +
+        'om 10 for 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm' +
+        #39','#39'08pm'#39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      
+        #9'then cast(SUBSTRING(hora from 1 for 2) as integer) + 12 else SU' +
+        'BSTRING(hora from 1 for 2) end'
+      #9') = 24'
+      #9'then '#39'00'#39
+      #9'ELSE('#9
+      #9'case '
+      
+        #9'when SUBSTRING(f.hora from 1 for 2)||SUBSTRING(f.hora from 10 f' +
+        'or 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm'#39','#39'08pm' +
+        #39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      #9'then cast(SUBSTRING(f.hora from 1 for 2) as integer) + 12'
+      #9'else SUBSTRING(hora from 1 for 2) end) end|| '#39':'#39'||'
+      #9'SUBSTRING(hora from 4 for 2)|| '#39':'#39'||'
+      
+        #9'SUBSTRING(hora from 7 for 2) as time) BETWEEN :xfecha1 and :xfe' +
+        'cha2')
+    Left = 464
+    Top = 214
+    ParamData = <
+      item
+        Name = 'XFECHA1'
+        DataType = ftWideString
+        ParamType = ptInput
+        Value = ''
+      end
+      item
+        Name = 'XFECHA2'
+        DataType = ftWideString
+        ParamType = ptInput
+        Value = ''
+      end>
+  end
+  object FDetalleFactEsp: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'select '
+      'DESC1,'
+      'iif ( '
+      'CANT - Trunc(CANT) > 0 , '
+      'ROUND(coalesce(CANT,0),2) ||'#39' '#39'|| UND_MEDIDA ,'
+      'ROUND(coalesce(CANT,0)) ||'#39' '#39'|| UND_MEDIDA )  as CANT,'
+      'SUBTOTAL'
+      'from detalle_factura where id_factura = :idfact')
+    Left = 464
+    Top = 286
+    ParamData = <
+      item
+        Name = 'IDFACT'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = 144913
+      end>
+  end
+  object DSesperaFact: TDataSetProvider
+    DataSet = Fesperasfact
+    Left = 552
+    Top = 142
+  end
+  object DSeliminada: TDataSetProvider
+    DataSet = Feliminadas
+    Left = 552
+    Top = 214
+  end
+  object DSdetalleFactEsp: TDataSetProvider
+    DataSet = FDetalleFactEsp
+    Left = 552
+    Top = 286
+  end
+  object FfacturaTipo: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'select'
+      'factno,'
+      #39'Fact No: '#39' || factno as TituloFact,'
+      'nombre_cliente,'
+      'tipo_fact,'
+      'coalesce(subtotal,0) as subtotal,'
+      'coalesce(totaldescuento,0) as totaldescuento,'
+      'coalesce((subtotal - totaldescuento),0 )as TOTAL_SIN_IMP'
+      'from factura f '
+      'where '
+      'F.tipo_fact = :tipo AND'
+      'F.ELIMINADA = '#39'0'#39' AND'
+      'cast(f.fecha as date) ||'#39' '#39'||cast(case when'
+      #9'('
+      
+        #9'case when SUBSTRING(f.hora from 1 for 2) || SUBSTRING(f.hora fr' +
+        'om 10 for 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm' +
+        #39','#39'08pm'#39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      
+        #9'then cast(SUBSTRING(hora from 1 for 2) as integer) + 12 else SU' +
+        'BSTRING(hora from 1 for 2) end'
+      #9') = 24'
+      #9'then '#39'00'#39
+      #9'ELSE('#9
+      #9'case '
+      
+        #9'when SUBSTRING(f.hora from 1 for 2)||SUBSTRING(f.hora from 10 f' +
+        'or 2) in ('#39'01pm'#39','#39'02pm'#39','#39'03pm'#39','#39'04pm'#39','#39'05pm'#39','#39'06pm'#39','#39'07pm'#39','#39'08pm' +
+        #39','#39'09pm'#39','#39'10pm'#39','#39'11pm'#39','#39'12am'#39')'
+      #9'then cast(SUBSTRING(f.hora from 1 for 2) as integer) + 12'
+      #9'else SUBSTRING(hora from 1 for 2) end) end|| '#39':'#39'||'
+      #9'SUBSTRING(hora from 4 for 2)|| '#39':'#39'||'
+      
+        #9'SUBSTRING(hora from 7 for 2) as time) BETWEEN :xfecha1 and :xfe' +
+        'cha2')
+    Left = 464
+    Top = 350
+    ParamData = <
+      item
+        Name = 'TIPO'
+        DataType = ftString
+        ParamType = ptInput
+        Value = ''
+      end
+      item
+        Name = 'XFECHA1'
+        DataType = ftWideString
+        ParamType = ptInput
+        Value = ''
+      end
+      item
+        Name = 'XFECHA2'
+        DataType = ftWideString
+        ParamType = ptInput
+        Value = ''
+      end>
+  end
+  object DSfacturaTipo: TDataSetProvider
+    DataSet = FfacturaTipo
+    Left = 552
+    Top = 350
+  end
+  object DSmesas: TDataSetProvider
+    DataSet = FMesas
+    Left = 952
+    Top = 328
+  end
+  object FMesas: TFDQuery
+    Connection = DSconnection
+    SQL.Strings = (
+      'Select * from mesas')
+    Left = 872
+    Top = 328
+  end
+  object FEjecutor: TFDQuery
+    Connection = DSconnection
+    UpdateOptions.AssignedValues = [uvAutoCommitUpdates]
+    UpdateOptions.AutoCommitUpdates = True
+    SQL.Strings = (
+      '')
+    Left = 672
+    Top = 256
+  end
+  object DSPejecutor: TDataSetProvider
+    DataSet = FEjecutor
+    Options = [poAllowCommandText, poUseQuoteChar]
+    Left = 752
+    Top = 256
+  end
+  object Fpreguntas: TFDQuery
+    Connection = DSconnection
+    UpdateOptions.AssignedValues = [uvAutoCommitUpdates]
+    UpdateOptions.AutoCommitUpdates = True
+    SQL.Strings = (
+      'select * from comentarios')
+    Left = 872
+    Top = 408
+  end
+  object DSPpreguntas: TDataSetProvider
+    DataSet = Fpreguntas
+    Options = [poAllowCommandText, poUseQuoteChar]
+    Left = 952
+    Top = 408
+  end
+  object Frespuestas: TFDQuery
+    Connection = DSconnection
+    UpdateOptions.AssignedValues = [uvAutoCommitUpdates]
+    UpdateOptions.AutoCommitUpdates = True
+    SQL.Strings = (
+      'select * from comentario_articulo')
+    Left = 872
+    Top = 464
+  end
+  object DSPrespuestas: TDataSetProvider
+    DataSet = Frespuestas
+    Options = [poAllowCommandText, poUseQuoteChar]
+    Left = 952
+    Top = 464
+  end
+end

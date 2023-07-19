@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2019/11/22 14:46:44.000.244,=C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\ServerMethodsUnit1.pas</Transaction>
+    <Transaction>2019/11/22 14:47:07.000.423,=C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\ServerContainerUnit1.pas</Transaction>
+    <Transaction>2019/11/22 14:47:13.000.778,=C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\js\base64.js</Transaction>
+    <Transaction>2019/11/22 14:47:14.000.627,=C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\js\serverfunctionexecutor-min.js</Transaction>
+    <Transaction>2019/11/22 14:47:14.000.374,=C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\js\base64-min.js</Transaction>
+    <Transaction>2019/11/22 14:47:14.000.677,=C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\js\callbackframework-min.js</Transaction>
+    <Transaction>2019/11/22 14:47:14.000.319,=C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\js\callbackframework.js</Transaction>
+    <Transaction>2019/11/22 14:47:14.000.065,=C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\js\serverfunctionexecutor.js</Transaction>
+    <Transaction>2019/11/22 14:47:14.000.555,=C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\js\json2-min.js</Transaction>
+    <Transaction>2019/11/22 14:47:14.000.145,=C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\js\json2.js</Transaction>
+    <Transaction>2019/12/02 14:42:49.000.666,=C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\Unit1.pas</Transaction>
+    <Transaction>2019/12/02 14:43:38.000.281,C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\Unit1.dfm=C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\DSPrueba.dfm</Transaction>
+    <Transaction>2019/12/02 14:43:38.000.281,C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\Unit1.pas=C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\DSPrueba.pas</Transaction>
+    <Transaction>2019/12/02 15:15:49.000.787,C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\DSPrueba.pas=</Transaction>
+    <Transaction>2020/07/28 14:48:03.000.162,=C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\Unit1.pas</Transaction>
+    <Transaction>2020/07/28 14:48:18.000.613,C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\Dispatch.pas=C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\Unit1.pas</Transaction>
+    <Transaction>2020/08/31 09:06:22.000.751,=C:\Users\BRYAN\Documents\Embarcadero\Studio\Projects\DataSnap_1\Unit1.pas</Transaction>
+    <Transaction>2020/10/23 16:21:23.000.484,C:\Users\user name\Documents\Embarcadero\Studio\Projects\DataSnap_1\DataSnap.dproj=C:\Users\user name\Documents\Embarcadero\Studio\Projects\DataSnap_1\DataSnap_1.dproj</Transaction>
+  </Transactions>
+</BorlandProject>

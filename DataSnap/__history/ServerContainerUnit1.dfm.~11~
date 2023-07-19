@@ -1,0 +1,62 @@
+object NemeSysDataSnap: TNemeSysDataSnap
+  OldCreateOrder = False
+  OnCreate = DataModuleCreate
+  AllowPause = False
+  DisplayName = 'NemeSysDS'
+  StartType = stManual
+  OnStart = ServiceStart
+  Height = 315
+  Width = 455
+  object DSServer1: TDSServer
+    Left = 48
+    Top = 43
+  end
+  object DSTCPServerTransport1: TDSTCPServerTransport
+    Server = DSServer1
+    Filters = <>
+    AuthenticationManager = DSAuthenticationManager1
+    KeepAliveEnablement = kaEnabled
+    KeepAliveTime = 30000
+    Left = 232
+    Top = 41
+  end
+  object DSAuthenticationManager1: TDSAuthenticationManager
+    OnUserAuthenticate = DSAuthenticationManager1UserAuthenticate
+    OnUserAuthorize = DSAuthenticationManager1UserAuthorize
+    Roles = <>
+    Left = 48
+    Top = 181
+  end
+  object DSServerClass1: TDSServerClass
+    OnGetClass = DSServerClass1GetClass
+    Server = DSServer1
+    Left = 120
+    Top = 43
+  end
+  object DSHTTPServiceProxyDispatcher1: TDSHTTPServiceProxyDispatcher
+    Service = DSHTTPService3
+    WebFileExtensions = <
+      item
+        MimeType = 'application/x-zip-compressed'
+        Extensions = 'zip'
+      end>
+    WebDirectories = <
+      item
+        DirectoryAction = dirInclude
+        DirectoryMask = '\proxy\*'
+      end
+      item
+        DirectoryAction = dirExclude
+        DirectoryMask = '\proxy\*\*'
+      end>
+    Left = 48
+    Top = 112
+  end
+  object DSHTTPService3: TDSHTTPService
+    Server = DSServer1
+    Filters = <>
+    AuthenticationManager = DSAuthenticationManager1
+    Left = 224
+    Top = 112
+  end
+end
